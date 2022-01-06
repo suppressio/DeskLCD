@@ -1,7 +1,4 @@
-# Packages #
-############
-# it's better to unpack these files and commit the raw source
-# git has its own built in compression methods
+# Packages
 *.7z
 *.dmg
 *.gz
@@ -9,38 +6,35 @@
 *.jar
 *.rar
 *.tar
+*.tar.gz
 *.zip
+*.ear
+*.war
 
-# Logs #
-########
+# Logs
 *.log
 
-# OS generated files #
-######################
+# OS generated files
 .DS_Store*
 ehthumbs.db
 Icon?
 Thumbs.db
 
-# Editor Files #
-################
+# Editor Files
 *~
 *.swp
 
-# Gradle Files #
-################
+# Gradle Files
 .gradle
 .m2
 
-# Build output directies #
-##########################
+# Build output directies
 /target
 */target
 /build
 */build
 
-# IntelliJ specific files/directories #
-#######################################
+# IntelliJ specific files/directories
 out
 .idea
 *.ipr
@@ -48,8 +42,7 @@ out
 *.iml
 atlassian-ide-plugin.xml
 
-# Eclipse specific files/directories #
-######################################
+# Eclipse specific files/directories
 .classpath
 .project
 .settings
