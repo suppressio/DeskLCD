@@ -9,6 +9,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -34,9 +35,21 @@ public class LcdProcConfigFile {
 
     private static final Pattern SECTION = Pattern.compile("^\\s*\\[([^\\]]+)\\]\\s*$");
     private static final Pattern ACTIVE = Pattern.compile("^(\\s*Active\\s*=\\s*)(\\S+)(.*)$", Pattern.CASE_INSENSITIVE);
+    private static final Pattern KEY_VALUE = Pattern.compile("^([A-Za-z]+)\\s*=(.*)$");
+
+    /** The [lcdproc] section's connection/runtime settings (not which screens are shown). */
+    public static class ConnectionSettings {
+        public String server = "localhost";
+        public String port = "13666";
+        public String reportLevel = "2";
+        public boolean reportToSyslog;
+        public boolean foreground;
+        public String pidFile = "";
+        public String displayName = "";
+    }
 
     public static Map<String, Boolean> readScreenStates() throws IOException {
-        return parseScreenStates(Files.readAllLines(Paths.get(PATH), StandardCharsets.UTF_8));
+        return parseScreenStates(readLines());
     }
 
     /**
@@ -45,12 +58,30 @@ public class LcdProcConfigFile {
      * pkexec.
      */
     public static void writeScreenStates(Map<String, Boolean> states) throws IOException, InterruptedException {
-        List<String> lines = Files.readAllLines(Paths.get(PATH), StandardCharsets.UTF_8);
-        List<String> result = applyScreenStates(lines, states);
+        writeLines(applyScreenStates(readLines(), states));
+    }
 
+    public static ConnectionSettings readConnectionSettings() throws IOException {
+        return parseConnectionSettings(readLines());
+    }
+
+    /**
+     * Writes the [lcdproc] connection settings back to /etc/lcdproc.conf,
+     * preserving everything else in the file. Prompts for authentication via
+     * pkexec.
+     */
+    public static void writeConnectionSettings(ConnectionSettings settings) throws IOException, InterruptedException {
+        writeLines(applyConnectionSettings(readLines(), settings));
+    }
+
+    private static List<String> readLines() throws IOException {
+        return Files.readAllLines(Paths.get(PATH), StandardCharsets.UTF_8);
+    }
+
+    private static void writeLines(List<String> lines) throws IOException, InterruptedException {
         Path tmp = Files.createTempFile("lcdproc-conf-", ".tmp");
         try {
-            Files.write(tmp, result, StandardCharsets.UTF_8);
+            Files.write(tmp, lines, StandardCharsets.UTF_8);
 
             ProcessBuilder pb = new ProcessBuilder("pkexec", "tee", PATH);
             pb.redirectInput(tmp.toFile());
@@ -139,6 +170,121 @@ public class LcdProcConfigFile {
                 if (pending.remove(section)) {
                     withInserts.add("Active=" + (states.get(section) ? "True" : "False"));
                 }
+            }
+        }
+        return withInserts;
+    }
+
+    /**
+     * Parses the [lcdproc] section's connection/runtime settings out of the
+     * given file content, falling back to ConnectionSettings' defaults for
+     * anything absent (including commented-out lines). Package-private:
+     * pure logic, exercised directly by tests.
+     */
+    static ConnectionSettings parseConnectionSettings(List<String> lines) {
+        Map<String, String> raw = new LinkedHashMap<>();
+        String currentSection = null;
+        for (String line : lines) {
+            Matcher sm = SECTION.matcher(line);
+            if (sm.matches()) {
+                currentSection = sm.group(1).trim();
+                continue;
+            }
+            if ("lcdproc".equals(currentSection)) {
+                Matcher km = KEY_VALUE.matcher(line);
+                if (km.matches()) {
+                    raw.put(km.group(1), km.group(2).trim());
+                }
+            }
+        }
+
+        ConnectionSettings settings = new ConnectionSettings();
+        settings.server = raw.getOrDefault("Server", settings.server);
+        settings.port = raw.getOrDefault("Port", settings.port);
+        settings.reportLevel = raw.getOrDefault("ReportLevel", settings.reportLevel);
+        settings.reportToSyslog = Boolean.parseBoolean(raw.getOrDefault("ReportToSyslog", "false"));
+        settings.foreground = Boolean.parseBoolean(raw.getOrDefault("Foreground", "false"));
+        settings.pidFile = raw.getOrDefault("PidFile", settings.pidFile);
+        settings.displayName = raw.getOrDefault("DisplayName", settings.displayName);
+        return settings;
+    }
+
+    /**
+     * Returns the given file content with the [lcdproc] section's
+     * connection settings rewritten to match settings, leaving everything
+     * else untouched. Server/Port/ReportLevel/ReportToSyslog are always
+     * written explicitly; Foreground/PidFile/DisplayName are optional and
+     * their line is removed entirely (falling back to the compiled-in
+     * default) when left at "off"/empty. Package-private: pure logic,
+     * exercised directly by tests.
+     */
+    static List<String> applyConnectionSettings(List<String> lines, ConnectionSettings settings) {
+        Map<String, String> values = new LinkedHashMap<>();
+        values.put("Server", settings.server);
+        values.put("Port", settings.port);
+        values.put("ReportLevel", settings.reportLevel);
+        values.put("ReportToSyslog", String.valueOf(settings.reportToSyslog));
+        values.put("Foreground", settings.foreground ? "true" : null);
+        values.put("PidFile", settings.pidFile.isEmpty() ? null : settings.pidFile);
+        values.put("DisplayName", settings.displayName.isEmpty() ? null : settings.displayName);
+        return applySectionValues(lines, "lcdproc", values);
+    }
+
+    /**
+     * Rewrites, within targetSection only, each line matching a key in
+     * values: a null value removes the line entirely, a non-null value
+     * replaces it (or is inserted right after the section header if the
+     * key was absent). Lines outside targetSection, and lines for keys not
+     * in values, are left untouched.
+     */
+    private static List<String> applySectionValues(List<String> lines, String targetSection, Map<String, String> values) {
+        Set<String> pending = new LinkedHashSet<>();
+        for (Map.Entry<String, String> e : values.entrySet()) {
+            if (e.getValue() != null) {
+                pending.add(e.getKey());
+            }
+        }
+
+        List<String> result = new ArrayList<>(lines.size());
+        String currentSection = null;
+        boolean inTarget = false;
+        for (String line : lines) {
+            Matcher sm = SECTION.matcher(line);
+            if (sm.matches()) {
+                currentSection = sm.group(1).trim();
+                inTarget = targetSection.equals(currentSection);
+                result.add(line);
+                continue;
+            }
+            if (inTarget) {
+                Matcher km = KEY_VALUE.matcher(line);
+                if (km.matches() && values.containsKey(km.group(1))) {
+                    String key = km.group(1);
+                    String newValue = values.get(key);
+                    pending.remove(key);
+                    if (newValue != null) {
+                        result.add(key + "=" + newValue);
+                    }
+                    continue;
+                }
+            }
+            result.add(line);
+        }
+
+        if (pending.isEmpty()) {
+            return result;
+        }
+
+        List<String> withInserts = new ArrayList<>(result.size() + pending.size());
+        boolean inserted = false;
+        for (String line : result) {
+            withInserts.add(line);
+            Matcher sm = SECTION.matcher(line);
+            if (sm.matches() && !inserted && targetSection.equals(sm.group(1).trim())) {
+                for (String key : pending) {
+                    withInserts.add(key + "=" + values.get(key));
+                }
+                inserted = true;
             }
         }
         return withInserts;

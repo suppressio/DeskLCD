@@ -8,7 +8,6 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
@@ -113,7 +112,7 @@ public class DeskLCD extends Composite {
                 Shell shell = new Shell(getDisplay());
                 shell.setText(Messages.get("screens.connectionDialog.title"));
                 shell.setLayout(new FillLayout());
-                new LCDprocConfig(shell, SWT.NONE);
+                new LCDprocConfig(shell, SWT.NONE, clientProcess);
                 shell.pack();
                 shell.open();
             }
@@ -150,29 +149,9 @@ public class DeskLCD extends Composite {
         try {
             LcdProcConfigFile.writeScreenStates(states);
             screensStatusLabel.setText(Messages.get("screens.status.saved", LcdProcConfigFile.PATH));
-            offerClientRestart();
+            ClientRestartPrompt.offer(getShell(), clientProcess);
         } catch (IOException | InterruptedException ex) {
             screensStatusLabel.setText(Messages.get("screens.status.saveError", ex.getMessage()));
-        }
-    }
-
-    private void offerClientRestart() {
-        if (!clientProcess.isRunningHere() && !LcdProcClientProcess.isRunningAnywhere()) {
-            return;
-        }
-        MessageBox box = new MessageBox(getShell(), SWT.ICON_QUESTION | SWT.YES | SWT.NO);
-        box.setText(Messages.get("screens.restartPrompt.title"));
-        box.setMessage(Messages.get("screens.restartPrompt.message"));
-        if (box.open() == SWT.YES) {
-            clientProcess.stop();
-            try {
-                clientProcess.start();
-            } catch (IOException ex) {
-                MessageBox err = new MessageBox(getShell(), SWT.ICON_ERROR | SWT.OK);
-                err.setText(Messages.get("error.title"));
-                err.setMessage(Messages.get("screens.restartError", ex.getMessage()));
-                err.open();
-            }
         }
     }
 
