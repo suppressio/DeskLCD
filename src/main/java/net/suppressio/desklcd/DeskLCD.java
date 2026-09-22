@@ -126,6 +126,14 @@ public class DeskLCD extends Composite {
 		btnNewButton.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
+				System.out.println("Click Start/Stop");
+				try {
+					String[] vars = {"localhost", "13666"};
+					LcdClientMain.main(vars);
+				} catch (Exception e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
 			}
 		});
 		btnNewButton.setBounds(272, 45, 91, 29);
