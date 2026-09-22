@@ -118,7 +118,7 @@ public class LcdClientMain extends Thread {
         }
 
         // SLF4J-Simple default log level is INFO. Set it to DEBUG:
-        System.setProperty(org.slf4j.impl.SimpleLogger.DEFAULT_LOG_LEVEL_KEY, "DEBUG");
+        System.setProperty(org.slf4j.simple.SimpleLogger.DEFAULT_LOG_LEVEL_KEY, "DEBUG");
 
         String host = args[0];
         int port = Integer.parseInt(args[1]);
