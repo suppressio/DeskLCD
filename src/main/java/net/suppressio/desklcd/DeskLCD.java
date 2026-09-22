@@ -176,6 +176,11 @@ public class DeskLCD extends Composite {
         }
     }
 
+    /** Stops any background process started by this GUI (the lcdproc client). Call before exiting. */
+    public void stopBackgroundProcesses() {
+        clientProcess.stop();
+    }
+
     @Override
     protected void checkSubclass() {
         // Disable the check that prevents subclassing of SWT components
