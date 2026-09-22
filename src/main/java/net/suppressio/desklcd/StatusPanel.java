@@ -29,6 +29,7 @@ public class StatusPanel extends Composite {
     private Button btnLcddStop;
     private Button btnLcddRestart;
     private Button btnClientToggle;
+    private Button btnAutostart;
 
     public StatusPanel(Composite parent, int style, LcdProcClientProcess clientProcess) {
         super(parent, style);
@@ -38,6 +39,7 @@ public class StatusPanel extends Composite {
 
         buildLcddGroup();
         buildClientGroup();
+        buildAutostartGroup();
 
         Button btnRefresh = new Button(this, SWT.NONE);
         btnRefresh.setText("Aggiorna");
@@ -95,6 +97,31 @@ public class StatusPanel extends Composite {
         btnClientToggle = new Button(group, SWT.NONE);
         btnClientToggle.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 2, 1));
         btnClientToggle.addListener(SWT.Selection, e -> toggleClient());
+    }
+
+    private void buildAutostartGroup() {
+        Group group = new Group(this, SWT.NONE);
+        group.setText("Avvio automatico");
+        group.setLayout(new GridLayout(1, false));
+        group.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
+
+        btnAutostart = new Button(group, SWT.CHECK);
+        btnAutostart.setText("Avvia DeskLCD automaticamente all'accesso");
+        btnAutostart.setSelection(AutostartManager.isEnabled());
+        btnAutostart.addListener(SWT.Selection, e -> toggleAutostart());
+    }
+
+    private void toggleAutostart() {
+        try {
+            if (btnAutostart.getSelection()) {
+                AutostartManager.enable();
+            } else {
+                AutostartManager.disable();
+            }
+        } catch (IOException ex) {
+            btnAutostart.setSelection(AutostartManager.isEnabled());
+            showError("Impossibile aggiornare l'avvio automatico", ex);
+        }
     }
 
     private void toggleClient() {

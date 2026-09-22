@@ -11,6 +11,9 @@
 *.ear
 *.war
 
+# Vendored dependency not published to any public repository (see pom.xml)
+!/local-repo/**/*.jar
+
 # Logs
 *.log
 
@@ -33,6 +36,7 @@ Thumbs.db
 */target
 /build
 */build
+/dependency-reduced-pom.xml
 
 # IntelliJ specific files/directories
 out
