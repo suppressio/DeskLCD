@@ -24,17 +24,24 @@ public class AutostartManager {
 
     public static void enable() throws IOException {
         Files.createDirectories(AUTOSTART_DIR);
-        String content = "[Desktop Entry]\n"
-                + "Type=Application\n"
-                + "Name=DeskLCD\n"
-                + "Comment=GUI per LCDd/LCDproc\n"
-                + "Exec=" + currentCommandLine() + "\n"
-                + "X-GNOME-Autostart-enabled=true\n";
-        Files.write(DESKTOP_FILE, content.getBytes(StandardCharsets.UTF_8));
+        Files.write(DESKTOP_FILE, buildDesktopEntry(currentCommandLine()).getBytes(StandardCharsets.UTF_8));
     }
 
     public static void disable() throws IOException {
         Files.deleteIfExists(DESKTOP_FILE);
+    }
+
+    /**
+     * Builds the .desktop entry content for the given Exec= command line.
+     * Package-private: pure logic, exercised directly by tests.
+     */
+    static String buildDesktopEntry(String execLine) {
+        return "[Desktop Entry]\n"
+                + "Type=Application\n"
+                + "Name=DeskLCD\n"
+                + "Comment=GUI per LCDd/LCDproc\n"
+                + "Exec=" + execLine + "\n"
+                + "X-GNOME-Autostart-enabled=true\n";
     }
 
     private static String currentCommandLine() {
