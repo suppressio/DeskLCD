@@ -56,17 +56,21 @@ public class DeskLCD extends Composite {
         gd_tabFolder.heightHint = 372;
         tabFolder.setLayoutData(gd_tabFolder);
 
+        Composite screensTabContent = buildScreensTab(tabFolder);
+        Composite customTabContent = new Composite(tabFolder, SWT.NONE);
+        customTabContent.setEnabled(false); // nothing built there yet; off by default
+
         TabItem statusTab = new TabItem(tabFolder, SWT.NONE);
         statusTab.setText(Messages.get("deskLcd.tab.status"));
-        statusTab.setControl(new StatusPanel(tabFolder, SWT.NONE, clientProcess));
+        statusTab.setControl(new StatusPanel(tabFolder, SWT.NONE, clientProcess, screensTabContent, customTabContent));
 
         TabItem screensTab = new TabItem(tabFolder, SWT.NONE);
         screensTab.setText(Messages.get("deskLcd.tab.screens"));
-        screensTab.setControl(buildScreensTab(tabFolder));
+        screensTab.setControl(screensTabContent);
 
         TabItem customTab = new TabItem(tabFolder, SWT.NONE);
         customTab.setText(Messages.get("deskLcd.tab.custom"));
-        customTab.setControl(new Composite(tabFolder, SWT.NONE));
+        customTab.setControl(customTabContent);
     }
 
     private Composite buildScreensTab(TabFolder tabFolder) {

@@ -19,6 +19,8 @@ import java.io.IOException;
 public class StatusPanel extends Composite {
 
     private final LcdProcClientProcess clientProcess;
+    private final Composite lcdprocTabContent;
+    private final Composite customTabContent;
 
     private Label lcddActiveValue;
     private Label lcddEnabledValue;
@@ -31,15 +33,19 @@ public class StatusPanel extends Composite {
     private Button btnClientToggle;
     private Button btnAutostart;
 
-    public StatusPanel(Composite parent, int style, LcdProcClientProcess clientProcess) {
+    public StatusPanel(Composite parent, int style, LcdProcClientProcess clientProcess,
+            Composite lcdprocTabContent, Composite customTabContent) {
         super(parent, style);
         this.clientProcess = clientProcess;
+        this.lcdprocTabContent = lcdprocTabContent;
+        this.customTabContent = customTabContent;
 
         setLayout(new GridLayout(1, false));
 
         buildLcddGroup();
         buildClientGroup();
         buildAutostartGroup();
+        buildModulesGroup();
 
         Button btnRefresh = new Button(this, SWT.NONE);
         btnRefresh.setText(Messages.get("status.button.refresh"));
@@ -109,6 +115,23 @@ public class StatusPanel extends Composite {
         btnAutostart.setText(Messages.get("status.autostart.checkbox"));
         btnAutostart.setSelection(AutostartManager.isEnabled());
         btnAutostart.addListener(SWT.Selection, e -> toggleAutostart());
+    }
+
+    private void buildModulesGroup() {
+        Group group = new Group(this, SWT.NONE);
+        group.setText(Messages.get("status.modules.group"));
+        group.setLayout(new GridLayout(1, false));
+        group.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
+
+        Button lcdprocModule = new Button(group, SWT.CHECK);
+        lcdprocModule.setText(Messages.get("status.modules.lcdproc"));
+        lcdprocModule.setSelection(lcdprocTabContent.getEnabled());
+        lcdprocModule.addListener(SWT.Selection, e -> lcdprocTabContent.setEnabled(lcdprocModule.getSelection()));
+
+        Button customModule = new Button(group, SWT.CHECK);
+        customModule.setText(Messages.get("status.modules.custom"));
+        customModule.setSelection(customTabContent.getEnabled());
+        customModule.addListener(SWT.Selection, e -> customTabContent.setEnabled(customModule.getSelection()));
     }
 
     private void toggleAutostart() {
