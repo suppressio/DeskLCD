@@ -1,186 +1,184 @@
 package net.suppressio.desklcd;
 
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Group;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.MessageBox;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
-import org.eclipse.swt.widgets.Button;
-import org.eclipse.swt.widgets.Group;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.events.MouseAdapter;
-import org.eclipse.swt.events.MouseEvent;
+
+import java.io.IOException;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 public class DeskLCD extends Composite {
 
-	/**
-	 * Create the composite.
-	 * @param parent
-	 * @param style
-	 */
-	public DeskLCD(Composite parent, int style) {
-		super(parent, style);
-		setLayout(new GridLayout(1, false));
-		
-		TabFolder tabFolder = new TabFolder(this, SWT.NONE);
-		GridData gd_tabFolder = new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1);
-		gd_tabFolder.heightHint = 372;
-		tabFolder.setLayoutData(gd_tabFolder);
-		
-		TabItem tbtmNewItem = new TabItem(tabFolder, SWT.NONE);
-		tbtmNewItem.setText("LCD Proc Standard");
-		
-		Group group = new Group(tabFolder, SWT.NONE);
-		tbtmNewItem.setControl(group);
-		
-		Button btnCheckButton = new Button(group, SWT.CHECK);
-		btnCheckButton.setToolTipText("Detailed CPU usage");
-		btnCheckButton.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-			}
-		});
-		btnCheckButton.setBounds(10, 10, 109, 19);
-		btnCheckButton.setText("CPU");
-		
-		Button btnCheckButton_1 = new Button(group, SWT.CHECK);
-		btnCheckButton_1.setToolTipText("CPU usage overview (one line per CPU)");
-		btnCheckButton_1.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-			}
-		});
-		btnCheckButton_1.setBounds(10, 35, 109, 19);
-		btnCheckButton_1.setText("SMP-CPU");
-		
-		Button btnCheckButton_2 = new Button(group, SWT.CHECK);
-		btnCheckButton_2.setToolTipText("CPU usage histogram");
-		btnCheckButton_2.setBounds(10, 60, 109, 19);
-		btnCheckButton_2.setText("CPUGraph");
-		
-		Button btnCheckButton_3 = new Button(group, SWT.CHECK);
-		btnCheckButton_3.setToolTipText("Load histogram");
-		btnCheckButton_3.setBounds(10, 85, 109, 19);
-		btnCheckButton_3.setText("Load");
-		
-		Button btnCheckButton_4 = new Button(group, SWT.CHECK);
-		btnCheckButton_4.setToolTipText("Memory & swap usage");
-		btnCheckButton_4.setBounds(10, 110, 109, 19);
-		btnCheckButton_4.setText("Memory");
-		
-		Button btnCheckButton_5 = new Button(group, SWT.CHECK);
-		btnCheckButton_5.setBounds(10, 135, 109, 19);
-		btnCheckButton_5.setText("ProcSize");
-		
-		Button btnCheckButton_6 = new Button(group, SWT.CHECK);
-		btnCheckButton_6.setBounds(10, 160, 109, 19);
-		btnCheckButton_6.setText("Disk");
-		
-		Button btnCheckButton_7 = new Button(group, SWT.CHECK);
-		btnCheckButton_7.setBounds(10, 185, 109, 19);
-		btnCheckButton_7.setText("Iface");
-		
-		Label label = new Label(group, SWT.SEPARATOR | SWT.VERTICAL);
-		label.setBounds(125, 10, 16, 200);
-		
-		Button btnCheckButton_8 = new Button(group, SWT.CHECK);
-		btnCheckButton_8.setBounds(147, 10, 109, 19);
-		btnCheckButton_8.setText("Battery");
-		
-		Button btnCheckButton_9 = new Button(group, SWT.CHECK);
-		btnCheckButton_9.setBounds(147, 35, 109, 19);
-		btnCheckButton_9.setText("TimeDate");
-		
-		Button btnCheckButton_10 = new Button(group, SWT.CHECK);
-		btnCheckButton_10.setBounds(147, 60, 109, 19);
-		btnCheckButton_10.setText("OldTime");
-		
-		Button btnCheckButton_11 = new Button(group, SWT.CHECK);
-		btnCheckButton_11.setBounds(147, 85, 109, 19);
-		btnCheckButton_11.setText("Uptime");
-		
-		Button btnCheckButton_12 = new Button(group, SWT.CHECK);
-		btnCheckButton_12.setBounds(147, 110, 109, 19);
-		btnCheckButton_12.setText("BigClock");
-		
-		Button btnCheckButton_13 = new Button(group, SWT.CHECK);
-		btnCheckButton_13.setBounds(147, 135, 109, 19);
-		btnCheckButton_13.setText("MiniClock");
-		
-		Button btnCheckButton_14 = new Button(group, SWT.CHECK);
-		btnCheckButton_14.setBounds(147, 160, 109, 19);
-		btnCheckButton_14.setText("About");
-		
-		
-		Label label2 = new Label(group, SWT.SEPARATOR | SWT.VERTICAL);
-		label2.setBounds(250, 10, 16, 200);
-		
-		Button btnNewButton = new Button(group, SWT.NONE);
-		btnNewButton.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				System.out.println("Click Start/Stop");
-				try {
-					String[] vars = {"localhost", "13666"};
-					LcdClientMain.main(vars);
-				} catch (Exception e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
-			}
-		});
-		btnNewButton.setBounds(272, 45, 91, 29);
-		btnNewButton.setText("Start/Stop");
-		
-		Button btnNewButton_1 = new Button(group, SWT.NONE);
-		btnNewButton_1.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseUp(MouseEvent e) {
+    /** Tooltip text for each screen, taken from "lcdproc --help". */
+    private static final String[] SCREEN_TOOLTIPS = {
+            "detailed CPU usage",
+            "CPU usage overview (one line per CPU)",
+            "CPU usage histogram",
+            "load histogram",
+            "memory & swap usage",
+            "biggest processes size",
+            "filling level of mounted file systems",
+            "network interface usage",
+            "battery status",
+            "time & date information",
+            "old time screen",
+            "uptime screen",
+            "big clock",
+            "minimal clock",
+            "credits page"
+    };
 
-				final Shell shell = new Shell(getDisplay());
-			    shell.setLayout(new FillLayout());
-			    
-			    shell.setLocation(e.x, e.y);
-			    new LCDprocConfig(shell,1);
-							    
-			    shell.pack();
-			    shell.open();
-				
-			}
-		});
-		btnNewButton_1.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-			}
-		});
-		btnNewButton_1.setBounds(272, 10, 91, 29);
-		btnNewButton_1.setText("Config");
-		
-		
-		TabItem tbtmNewItem_1 = new TabItem(tabFolder, SWT.NONE);
-		tbtmNewItem_1.setText("Custom");
-		
+    private final LcdProcClientProcess clientProcess = new LcdProcClientProcess();
 
+    private Button[] screenChecks;
+    private Label screensStatusLabel;
 
-	}
+    /**
+     * Create the composite.
+     * @param parent
+     * @param style
+     */
+    public DeskLCD(Composite parent, int style) {
+        super(parent, style);
+        setLayout(new GridLayout(1, false));
 
-	private void tab1() {
-		
-	}
-	
-	public Point getLocation() {
-		return this.getLocation();
-	}
-	
-	@Override
-	protected void checkSubclass() {
-		// Disable the check that prevents subclassing of SWT components
-	}
+        TabFolder tabFolder = new TabFolder(this, SWT.NONE);
+        GridData gd_tabFolder = new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1);
+        gd_tabFolder.heightHint = 372;
+        tabFolder.setLayoutData(gd_tabFolder);
+
+        TabItem statusTab = new TabItem(tabFolder, SWT.NONE);
+        statusTab.setText("Stato");
+        statusTab.setControl(new StatusPanel(tabFolder, SWT.NONE, clientProcess));
+
+        TabItem screensTab = new TabItem(tabFolder, SWT.NONE);
+        screensTab.setText("Schermate LCD");
+        screensTab.setControl(buildScreensTab(tabFolder));
+
+        TabItem customTab = new TabItem(tabFolder, SWT.NONE);
+        customTab.setText("Custom");
+        customTab.setControl(new Composite(tabFolder, SWT.NONE));
+    }
+
+    private Composite buildScreensTab(TabFolder tabFolder) {
+        Group group = new Group(tabFolder, SWT.NONE);
+
+        String[] names = LcdProcConfigFile.SCREENS;
+        screenChecks = new Button[names.length];
+
+        int col1X = 10, col2X = 147, rowH = 25, y0 = 10;
+        for (int i = 0; i < names.length; i++) {
+            int col = i / 8;
+            int row = i % 8;
+            Button check = new Button(group, SWT.CHECK);
+            check.setText(names[i]);
+            check.setToolTipText(SCREEN_TOOLTIPS[i]);
+            check.setBounds((col == 0 ? col1X : col2X), y0 + row * rowH, 120, 19);
+            screenChecks[i] = check;
+        }
+
+        Label separator = new Label(group, SWT.SEPARATOR | SWT.VERTICAL);
+        separator.setBounds(125, 10, 16, 200);
+
+        Label separator2 = new Label(group, SWT.SEPARATOR | SWT.VERTICAL);
+        separator2.setBounds(272, 10, 16, 200);
+
+        Button btnReload = new Button(group, SWT.NONE);
+        btnReload.setBounds(295, 10, 100, 29);
+        btnReload.setText("Ricarica");
+        btnReload.addListener(SWT.Selection, e -> loadScreenStates());
+
+        Button btnSave = new Button(group, SWT.NONE);
+        btnSave.setBounds(295, 45, 100, 29);
+        btnSave.setText("Salva");
+        btnSave.addListener(SWT.Selection, e -> saveScreenStates());
+
+        Button btnConfig = new Button(group, SWT.NONE);
+        btnConfig.setBounds(295, 90, 100, 29);
+        btnConfig.setText("Connessione...");
+        btnConfig.setToolTipText("Altre impostazioni del client lcdproc (in arrivo)");
+        btnConfig.addSelectionListener(new org.eclipse.swt.events.SelectionAdapter() {
+            @Override
+            public void widgetSelected(org.eclipse.swt.events.SelectionEvent e) {
+                Shell shell = new Shell(getDisplay());
+                shell.setText("Connessione LCDd");
+                shell.setLayout(new FillLayout());
+                new LCDprocConfig(shell, SWT.NONE);
+                shell.pack();
+                shell.open();
+            }
+        });
+
+        screensStatusLabel = new Label(group, SWT.WRAP);
+        screensStatusLabel.setBounds(295, 130, 220, 80);
+
+        loadScreenStates();
+
+        return group;
+    }
+
+    private void loadScreenStates() {
+        try {
+            Map<String, Boolean> states = LcdProcConfigFile.readScreenStates();
+            String[] names = LcdProcConfigFile.SCREENS;
+            for (int i = 0; i < names.length; i++) {
+                Boolean active = states.get(names[i]);
+                screenChecks[i].setSelection(Boolean.TRUE.equals(active));
+            }
+            screensStatusLabel.setText("Caricato da " + LcdProcConfigFile.PATH);
+        } catch (IOException ex) {
+            screensStatusLabel.setText("Errore lettura config:\n" + ex.getMessage());
+        }
+    }
+
+    private void saveScreenStates() {
+        Map<String, Boolean> states = new LinkedHashMap<>();
+        String[] names = LcdProcConfigFile.SCREENS;
+        for (int i = 0; i < names.length; i++) {
+            states.put(names[i], screenChecks[i].getSelection());
+        }
+        try {
+            LcdProcConfigFile.writeScreenStates(states);
+            screensStatusLabel.setText("Salvato in " + LcdProcConfigFile.PATH);
+            offerClientRestart();
+        } catch (IOException | InterruptedException ex) {
+            screensStatusLabel.setText("Errore salvataggio:\n" + ex.getMessage());
+        }
+    }
+
+    private void offerClientRestart() {
+        if (!clientProcess.isRunningHere() && !LcdProcClientProcess.isRunningAnywhere()) {
+            return;
+        }
+        MessageBox box = new MessageBox(getShell(), SWT.ICON_QUESTION | SWT.YES | SWT.NO);
+        box.setText("Riavviare il client?");
+        box.setMessage("Il client lcdproc legge la configurazione solo all'avvio.\n"
+                + "Riavviarlo ora per mostrare le nuove schermate sull'LCD?");
+        if (box.open() == SWT.YES) {
+            clientProcess.stop();
+            try {
+                clientProcess.start();
+            } catch (IOException ex) {
+                MessageBox err = new MessageBox(getShell(), SWT.ICON_ERROR | SWT.OK);
+                err.setText("Errore");
+                err.setMessage("Impossibile riavviare il client lcdproc:\n" + ex.getMessage());
+                err.open();
+            }
+        }
+    }
+
+    @Override
+    protected void checkSubclass() {
+        // Disable the check that prevents subclassing of SWT components
+    }
 }
