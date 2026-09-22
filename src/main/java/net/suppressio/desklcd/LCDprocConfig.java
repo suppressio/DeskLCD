@@ -27,7 +27,7 @@ public class LCDprocConfig extends Composite {
 		
 		Label lblNewLabel = new Label(this, SWT.NONE);
 		lblNewLabel.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
-		lblNewLabel.setText("Server");
+		lblNewLabel.setText(Messages.get("connection.label.server"));
 		new Label(this, SWT.NONE);
 		
 		text = new Text(this, SWT.BORDER);
@@ -35,7 +35,7 @@ public class LCDprocConfig extends Composite {
 		
 		Label lblNewLabel_1 = new Label(this, SWT.NONE);
 		lblNewLabel_1.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
-		lblNewLabel_1.setText("Port");
+		lblNewLabel_1.setText(Messages.get("connection.label.port"));
 		new Label(this, SWT.NONE);
 		
 		text_1 = new Text(this, SWT.BORDER);
@@ -43,7 +43,7 @@ public class LCDprocConfig extends Composite {
 		
 		Label lblNewLabel_2 = new Label(this, SWT.NONE);
 		lblNewLabel_2.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
-		lblNewLabel_2.setText("Report");
+		lblNewLabel_2.setText(Messages.get("connection.label.report"));
 		
 		Button btnCheckButton_1 = new Button(this, SWT.CHECK);
 		
@@ -54,7 +54,7 @@ public class LCDprocConfig extends Composite {
 		
 		Label lblNewLabel_3 = new Label(this, SWT.NONE);
 		lblNewLabel_3.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
-		lblNewLabel_3.setText("Foreground");
+		lblNewLabel_3.setText(Messages.get("connection.label.foreground"));
 		
 		Button btnCheckButton_2 = new Button(this, SWT.CHECK);
 		
@@ -63,7 +63,7 @@ public class LCDprocConfig extends Composite {
 		
 		Label lblNewLabel_4 = new Label(this, SWT.NONE);
 		lblNewLabel_4.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
-		lblNewLabel_4.setText("PidFile");
+		lblNewLabel_4.setText(Messages.get("connection.label.pidfile"));
 		
 		Button btnCheckButton = new Button(this, SWT.CHECK);
 		
@@ -72,7 +72,7 @@ public class LCDprocConfig extends Composite {
 		
 		Label lblNewLabel_5 = new Label(this, SWT.NONE);
 		lblNewLabel_5.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
-		lblNewLabel_5.setText("Display Name");
+		lblNewLabel_5.setText(Messages.get("connection.label.displayName"));
 		
 		Button btnCheckButton_3 = new Button(this, SWT.CHECK);
 		

@@ -19,23 +19,23 @@ import java.util.Map;
 
 public class DeskLCD extends Composite {
 
-    /** Tooltip text for each screen, taken from "lcdproc --help". */
-    private static final String[] SCREEN_TOOLTIPS = {
-            "detailed CPU usage",
-            "CPU usage overview (one line per CPU)",
-            "CPU usage histogram",
-            "load histogram",
-            "memory & swap usage",
-            "biggest processes size",
-            "filling level of mounted file systems",
-            "network interface usage",
-            "battery status",
-            "time & date information",
-            "old time screen",
-            "uptime screen",
-            "big clock",
-            "minimal clock",
-            "credits page"
+    /** Message keys for each screen's tooltip, in the same order as LcdProcConfigFile.SCREENS. */
+    private static final String[] SCREEN_TOOLTIP_KEYS = {
+            "screen.tooltip.cpu",
+            "screen.tooltip.smpCpu",
+            "screen.tooltip.cpuGraph",
+            "screen.tooltip.load",
+            "screen.tooltip.memory",
+            "screen.tooltip.procSize",
+            "screen.tooltip.disk",
+            "screen.tooltip.iface",
+            "screen.tooltip.battery",
+            "screen.tooltip.timeDate",
+            "screen.tooltip.oldTime",
+            "screen.tooltip.uptime",
+            "screen.tooltip.bigClock",
+            "screen.tooltip.miniClock",
+            "screen.tooltip.about"
     };
 
     private final LcdProcClientProcess clientProcess = new LcdProcClientProcess();
@@ -58,15 +58,15 @@ public class DeskLCD extends Composite {
         tabFolder.setLayoutData(gd_tabFolder);
 
         TabItem statusTab = new TabItem(tabFolder, SWT.NONE);
-        statusTab.setText("Stato");
+        statusTab.setText(Messages.get("deskLcd.tab.status"));
         statusTab.setControl(new StatusPanel(tabFolder, SWT.NONE, clientProcess));
 
         TabItem screensTab = new TabItem(tabFolder, SWT.NONE);
-        screensTab.setText("Schermate LCD");
+        screensTab.setText(Messages.get("deskLcd.tab.screens"));
         screensTab.setControl(buildScreensTab(tabFolder));
 
         TabItem customTab = new TabItem(tabFolder, SWT.NONE);
-        customTab.setText("Custom");
+        customTab.setText(Messages.get("deskLcd.tab.custom"));
         customTab.setControl(new Composite(tabFolder, SWT.NONE));
     }
 
@@ -82,7 +82,7 @@ public class DeskLCD extends Composite {
             int row = i % 8;
             Button check = new Button(group, SWT.CHECK);
             check.setText(names[i]);
-            check.setToolTipText(SCREEN_TOOLTIPS[i]);
+            check.setToolTipText(Messages.get(SCREEN_TOOLTIP_KEYS[i]));
             check.setBounds((col == 0 ? col1X : col2X), y0 + row * rowH, 120, 19);
             screenChecks[i] = check;
         }
@@ -95,23 +95,23 @@ public class DeskLCD extends Composite {
 
         Button btnReload = new Button(group, SWT.NONE);
         btnReload.setBounds(295, 10, 100, 29);
-        btnReload.setText("Ricarica");
+        btnReload.setText(Messages.get("screens.button.reload"));
         btnReload.addListener(SWT.Selection, e -> loadScreenStates());
 
         Button btnSave = new Button(group, SWT.NONE);
         btnSave.setBounds(295, 45, 100, 29);
-        btnSave.setText("Salva");
+        btnSave.setText(Messages.get("screens.button.save"));
         btnSave.addListener(SWT.Selection, e -> saveScreenStates());
 
         Button btnConfig = new Button(group, SWT.NONE);
         btnConfig.setBounds(295, 90, 100, 29);
-        btnConfig.setText("Connessione...");
-        btnConfig.setToolTipText("Altre impostazioni del client lcdproc (in arrivo)");
+        btnConfig.setText(Messages.get("screens.button.connection"));
+        btnConfig.setToolTipText(Messages.get("screens.button.connection.tooltip"));
         btnConfig.addSelectionListener(new org.eclipse.swt.events.SelectionAdapter() {
             @Override
             public void widgetSelected(org.eclipse.swt.events.SelectionEvent e) {
                 Shell shell = new Shell(getDisplay());
-                shell.setText("Connessione LCDd");
+                shell.setText(Messages.get("screens.connectionDialog.title"));
                 shell.setLayout(new FillLayout());
                 new LCDprocConfig(shell, SWT.NONE);
                 shell.pack();
@@ -135,9 +135,9 @@ public class DeskLCD extends Composite {
                 Boolean active = states.get(names[i]);
                 screenChecks[i].setSelection(Boolean.TRUE.equals(active));
             }
-            screensStatusLabel.setText("Caricato da " + LcdProcConfigFile.PATH);
+            screensStatusLabel.setText(Messages.get("screens.status.loaded", LcdProcConfigFile.PATH));
         } catch (IOException ex) {
-            screensStatusLabel.setText("Errore lettura config:\n" + ex.getMessage());
+            screensStatusLabel.setText(Messages.get("screens.status.loadError", ex.getMessage()));
         }
     }
 
@@ -149,10 +149,10 @@ public class DeskLCD extends Composite {
         }
         try {
             LcdProcConfigFile.writeScreenStates(states);
-            screensStatusLabel.setText("Salvato in " + LcdProcConfigFile.PATH);
+            screensStatusLabel.setText(Messages.get("screens.status.saved", LcdProcConfigFile.PATH));
             offerClientRestart();
         } catch (IOException | InterruptedException ex) {
-            screensStatusLabel.setText("Errore salvataggio:\n" + ex.getMessage());
+            screensStatusLabel.setText(Messages.get("screens.status.saveError", ex.getMessage()));
         }
     }
 
@@ -161,17 +161,16 @@ public class DeskLCD extends Composite {
             return;
         }
         MessageBox box = new MessageBox(getShell(), SWT.ICON_QUESTION | SWT.YES | SWT.NO);
-        box.setText("Riavviare il client?");
-        box.setMessage("Il client lcdproc legge la configurazione solo all'avvio.\n"
-                + "Riavviarlo ora per mostrare le nuove schermate sull'LCD?");
+        box.setText(Messages.get("screens.restartPrompt.title"));
+        box.setMessage(Messages.get("screens.restartPrompt.message"));
         if (box.open() == SWT.YES) {
             clientProcess.stop();
             try {
                 clientProcess.start();
             } catch (IOException ex) {
                 MessageBox err = new MessageBox(getShell(), SWT.ICON_ERROR | SWT.OK);
-                err.setText("Errore");
-                err.setMessage("Impossibile riavviare il client lcdproc:\n" + ex.getMessage());
+                err.setText(Messages.get("error.title"));
+                err.setMessage(Messages.get("screens.restartError", ex.getMessage()));
                 err.open();
             }
         }

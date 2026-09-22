@@ -42,7 +42,7 @@ public class StatusPanel extends Composite {
         buildAutostartGroup();
 
         Button btnRefresh = new Button(this, SWT.NONE);
-        btnRefresh.setText("Aggiorna");
+        btnRefresh.setText(Messages.get("status.button.refresh"));
         btnRefresh.addListener(SWT.Selection, e -> refresh());
 
         refresh();
@@ -51,19 +51,19 @@ public class StatusPanel extends Composite {
 
     private void buildLcddGroup() {
         Group group = new Group(this, SWT.NONE);
-        group.setText("Servizio LCDd (systemd: " + LcdProcSystemService.UNIT + ")");
+        group.setText(Messages.get("status.lcdd.group", LcdProcSystemService.UNIT));
         group.setLayout(new GridLayout(2, false));
         group.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
 
-        new Label(group, SWT.NONE).setText("Attivo:");
+        new Label(group, SWT.NONE).setText(Messages.get("status.lcdd.active.label"));
         lcddActiveValue = new Label(group, SWT.NONE);
         lcddActiveValue.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 
-        new Label(group, SWT.NONE).setText("Abilitato all'avvio:");
+        new Label(group, SWT.NONE).setText(Messages.get("status.lcdd.enabled.label"));
         lcddEnabledValue = new Label(group, SWT.NONE);
         lcddEnabledValue.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 
-        new Label(group, SWT.NONE).setText("Attivo dal:");
+        new Label(group, SWT.NONE).setText(Messages.get("status.lcdd.since.label"));
         lcddSinceValue = new Label(group, SWT.NONE);
         lcddSinceValue.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 
@@ -72,25 +72,25 @@ public class StatusPanel extends Composite {
         buttons.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
 
         btnLcddStart = new Button(buttons, SWT.NONE);
-        btnLcddStart.setText("Avvia");
-        btnLcddStart.addListener(SWT.Selection, e -> runElevated(LcdProcSystemService::start, "avvio"));
+        btnLcddStart.setText(Messages.get("status.button.start"));
+        btnLcddStart.addListener(SWT.Selection, e -> runElevated(LcdProcSystemService::start, "status.lcdd.error.start"));
 
         btnLcddStop = new Button(buttons, SWT.NONE);
-        btnLcddStop.setText("Ferma");
-        btnLcddStop.addListener(SWT.Selection, e -> runElevated(LcdProcSystemService::stop, "arresto"));
+        btnLcddStop.setText(Messages.get("status.button.stop"));
+        btnLcddStop.addListener(SWT.Selection, e -> runElevated(LcdProcSystemService::stop, "status.lcdd.error.stop"));
 
         btnLcddRestart = new Button(buttons, SWT.NONE);
-        btnLcddRestart.setText("Riavvia");
-        btnLcddRestart.addListener(SWT.Selection, e -> runElevated(LcdProcSystemService::restart, "riavvio"));
+        btnLcddRestart.setText(Messages.get("status.button.restart"));
+        btnLcddRestart.addListener(SWT.Selection, e -> runElevated(LcdProcSystemService::restart, "status.lcdd.error.restart"));
     }
 
     private void buildClientGroup() {
         Group group = new Group(this, SWT.NONE);
-        group.setText("Client lcdproc (mostra le informazioni sull'LCD)");
+        group.setText(Messages.get("status.client.group"));
         group.setLayout(new GridLayout(2, false));
         group.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
 
-        new Label(group, SWT.NONE).setText("Stato:");
+        new Label(group, SWT.NONE).setText(Messages.get("status.client.label"));
         clientStateValue = new Label(group, SWT.NONE);
         clientStateValue.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 
@@ -101,12 +101,12 @@ public class StatusPanel extends Composite {
 
     private void buildAutostartGroup() {
         Group group = new Group(this, SWT.NONE);
-        group.setText("Avvio automatico");
+        group.setText(Messages.get("status.autostart.group"));
         group.setLayout(new GridLayout(1, false));
         group.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
 
         btnAutostart = new Button(group, SWT.CHECK);
-        btnAutostart.setText("Avvia DeskLCD automaticamente all'accesso");
+        btnAutostart.setText(Messages.get("status.autostart.checkbox"));
         btnAutostart.setSelection(AutostartManager.isEnabled());
         btnAutostart.addListener(SWT.Selection, e -> toggleAutostart());
     }
@@ -120,7 +120,7 @@ public class StatusPanel extends Composite {
             }
         } catch (IOException ex) {
             btnAutostart.setSelection(AutostartManager.isEnabled());
-            showError("Impossibile aggiornare l'avvio automatico", ex);
+            showError(Messages.get("status.autostart.error"), ex);
         }
     }
 
@@ -132,7 +132,7 @@ public class StatusPanel extends Composite {
                 clientProcess.start();
             }
         } catch (IOException ex) {
-            showError("Impossibile avviare il client lcdproc", ex);
+            showError(Messages.get("status.client.error"), ex);
         }
         refresh();
     }
@@ -142,12 +142,12 @@ public class StatusPanel extends Composite {
         void run() throws IOException, InterruptedException;
     }
 
-    private void runElevated(ElevatedAction action, String label) {
+    private void runElevated(ElevatedAction action, String errorMessageKey) {
         setLcddButtonsEnabled(false);
         try {
             action.run();
         } catch (Exception ex) {
-            showError("Errore durante " + label + " del servizio LCDd", ex);
+            showError(Messages.get(errorMessageKey), ex);
         } finally {
             setLcddButtonsEnabled(true);
             refresh();
@@ -168,8 +168,8 @@ public class StatusPanel extends Composite {
             return;
         }
         MessageBox box = new MessageBox(getShell(), SWT.ICON_ERROR | SWT.OK);
-        box.setText("Errore");
-        box.setMessage(message + ":\n" + ex.getMessage());
+        box.setText(Messages.get("error.title"));
+        box.setMessage(Messages.get("error.detail", message, ex.getMessage()));
         box.open();
     }
 
@@ -179,24 +179,24 @@ public class StatusPanel extends Composite {
         }
 
         LcdProcSystemService.Status status = LcdProcSystemService.queryStatus();
-        lcddActiveValue.setText(status.active ? "si', in esecuzione" : "no, fermo");
-        lcddEnabledValue.setText(status.enabled ? "si'" : "no");
+        lcddActiveValue.setText(Messages.get(status.active ? "status.value.activeYes" : "status.value.activeNo"));
+        lcddEnabledValue.setText(Messages.get(status.enabled ? "status.value.yes" : "status.value.no"));
         lcddSinceValue.setText(status.since);
 
         boolean runningHere = clientProcess.isRunningHere();
         boolean runningAnywhere = LcdProcClientProcess.isRunningAnywhere();
 
         if (runningHere) {
-            clientStateValue.setText("in esecuzione (avviato da questa finestra)");
-            btnClientToggle.setText("Ferma");
+            clientStateValue.setText(Messages.get("status.client.running.here"));
+            btnClientToggle.setText(Messages.get("status.button.stop"));
             btnClientToggle.setEnabled(true);
         } else if (runningAnywhere) {
-            clientStateValue.setText("in esecuzione (avviato esternamente)");
-            btnClientToggle.setText("Avvia");
+            clientStateValue.setText(Messages.get("status.client.running.external"));
+            btnClientToggle.setText(Messages.get("status.button.start"));
             btnClientToggle.setEnabled(false);
         } else {
-            clientStateValue.setText("fermo");
-            btnClientToggle.setText("Avvia");
+            clientStateValue.setText(Messages.get("status.client.stopped"));
+            btnClientToggle.setText(Messages.get("status.button.start"));
             btnClientToggle.setEnabled(true);
         }
 

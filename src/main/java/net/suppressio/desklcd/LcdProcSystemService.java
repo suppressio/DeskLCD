@@ -50,7 +50,7 @@ public class LcdProcSystemService {
     private static void control(String action) throws IOException, InterruptedException {
         int code = run("pkexec", "systemctl", action, UNIT);
         if (code != 0) {
-            throw new IOException("systemctl " + action + " " + UNIT + " ha restituito il codice " + code);
+            throw new IOException(Messages.get("service.error.exitCode", action, UNIT, code));
         }
     }
 

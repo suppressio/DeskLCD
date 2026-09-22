@@ -59,10 +59,10 @@ public class LcdProcConfigFile {
             Process p = pb.start();
             if (!p.waitFor(60, TimeUnit.SECONDS)) {
                 p.destroyForcibly();
-                throw new IOException("Timeout durante il salvataggio (autenticazione non completata?)");
+                throw new IOException(Messages.get("config.error.timeout"));
             }
             if (p.exitValue() != 0) {
-                throw new IOException("Salvataggio annullato o fallito (codice " + p.exitValue() + ")");
+                throw new IOException(Messages.get("config.error.saveFailed", p.exitValue()));
             }
         } finally {
             Files.deleteIfExists(tmp);

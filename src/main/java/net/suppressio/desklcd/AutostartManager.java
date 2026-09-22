@@ -39,7 +39,7 @@ public class AutostartManager {
         return "[Desktop Entry]\n"
                 + "Type=Application\n"
                 + "Name=DeskLCD\n"
-                + "Comment=GUI per LCDd/LCDproc\n"
+                + "Comment=" + Messages.get("autostart.desktop.comment") + "\n"
                 + "Exec=" + execLine + "\n"
                 + "X-GNOME-Autostart-enabled=true\n";
     }
