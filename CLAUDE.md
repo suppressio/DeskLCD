@@ -72,3 +72,11 @@ simulare i click da bash.
   hardcoded): scrittura `/etc/lcdproc.conf` e `systemctl start/stop/restart`.
 - `lcdjava` (la libreria vendorizzata) è ferma dal 2016: non esiste una
   versione più recente da tirare, nessun aggiornamento possibile lì.
+
+## Regole per lagente
+
+- Lavori sul branch che ti è stato preparato (`agent/<n>-slug`, nato da `next`). Non cambiare branch, non fare `git push`, non toccare `main` o `next`: push e PR li fa il dispatcher.
+- Resta nello scope della issue. Se emergono altri problemi o idee, elencali nel riepilogo finale invece di implementarli.
+- Se non riesci a completare la issue (requisiti ambigui, blocco tecnico, test che non riesci a far passare), fermati e spiega nel riepilogo cosa manca.
+- Build: `mvn package`. Non cè test automatizzato: verifica che il jar si compili e non ci siano warning nuovi.
+- Termina con un riepilogo: cosa hai fatto, come lhai verificato, cosa resta da provare a mano.
