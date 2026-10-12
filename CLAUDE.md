@@ -14,10 +14,12 @@ astrazione/mock, tutto ciò che la GUI mostra è letto dal sistema live.
   informazioni sull'LCD, leggendo `/etc/lcdproc.conf`. Non è un servizio
   systemd — va gestito come processo figlio (`LcdProcClientProcess.java`).
 - **`/etc/lcdproc.conf`**: sezioni `[NomeSchermata]` con `Active=True/False`
-  corrispondono 1:1 alle checkbox nella tab "Schermate LCD". Parsing/scrittura
+  corrispondono 1:1 alle checkbox nella tab "Client lcdproc". Parsing/scrittura
   in `LcdProcConfigFile.java`; la scrittura richiede root → `pkexec tee`.
 
 ## Build
+
+Dettagli per chi sviluppa (anche per gli umani): `docs/DEVELOPMENT.md`.
 
 `mvn package` produce due jar in `target/`:
 - `swt-lcdproc-client-<versione>.jar` — solo le classi del progetto.
@@ -73,10 +75,10 @@ simulare i click da bash.
 - `lcdjava` (la libreria vendorizzata) è ferma dal 2016: non esiste una
   versione più recente da tirare, nessun aggiornamento possibile lì.
 
-## Regole per lagente
+## Regole per l'agente
 
 - Lavori sul branch che ti è stato preparato (`agent/<n>-slug`, nato da `next`). Non cambiare branch, non fare `git push`, non toccare `main` o `next`: push e PR li fa il dispatcher.
 - Resta nello scope della issue. Se emergono altri problemi o idee, elencali nel riepilogo finale invece di implementarli.
 - Se non riesci a completare la issue (requisiti ambigui, blocco tecnico, test che non riesci a far passare), fermati e spiega nel riepilogo cosa manca.
-- Build: `mvn package`. Non cè test automatizzato: verifica che il jar si compili e non ci siano warning nuovi.
-- Termina con un riepilogo: cosa hai fatto, come lhai verificato, cosa resta da provare a mano.
+- Build e test: `mvn package` (esegue anche `mvn test`). Verifica che il jar si compili, che i test passino e che non ci siano warning nuovi.
+- Termina con un riepilogo: cosa hai fatto, come l'hai verificato, cosa resta da provare a mano.
