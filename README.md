@@ -61,3 +61,7 @@ Controlling the service and saving `/etc/lcdproc.conf` need root: DeskLCD asks t
 ## Development
 
 Building from source, tests and the release pipeline: [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md).
+
+## License
+
+[MIT](LICENSE) © 2022 Daniele 'suppressio'.

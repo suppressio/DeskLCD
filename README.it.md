@@ -61,3 +61,7 @@ Controllare il servizio e salvare `/etc/lcdproc.conf` richiedono root: DeskLCD l
 ## Sviluppo
 
 Build dai sorgenti, test e pipeline di release: [docs/DEVELOPMENT.it.md](docs/DEVELOPMENT.it.md).
+
+## Licenza
+
+[MIT](LICENSE) © 2022 Daniele 'suppressio'.
